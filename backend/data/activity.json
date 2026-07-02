@@ -1,0 +1,26 @@
+[
+  {
+    "type": "pricing",
+    "crop": "potato",
+    "region": "india",
+    "ts": "2026-07-02T13:12:09.178422+00:00"
+  },
+  {
+    "type": "pricing",
+    "crop": "potato",
+    "region": "india",
+    "ts": "2026-07-02T13:12:12.232863+00:00"
+  },
+  {
+    "type": "disease_check",
+    "region": "Field A",
+    "disease": "Mosaic Virus",
+    "ts": "2026-07-02T13:14:32.080228+00:00"
+  },
+  {
+    "type": "disease_check",
+    "region": "Field A",
+    "disease": "Mosaic Virus",
+    "ts": "2026-07-02T13:19:45.693595+00:00"
+  }
+]

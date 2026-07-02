@@ -151,9 +151,89 @@ def _soil_profile_for_location(location: str) -> Dict[str, float]:
 
 
 async def _fetch_weather(location: str) -> Dict[str, Any]:
+    """
+    Fetch current weather for a location.
+    Primary:  Open-Meteo geocoding + current conditions (no API key needed).
+    Fallback: OpenWeatherMap if OPENWEATHER_API_KEY is set and Open-Meteo fails.
+    Last resort: sensible regional defaults so the endpoint never errors.
+    """
+    # ── Try Open-Meteo (always available, no key) ──────────────────────────────
+    try:
+        async with httpx.AsyncClient(timeout=10) as client:
+            # Step 1: geocode via Open-Meteo
+            geo_resp = await client.get(
+                "https://geocoding-api.open-meteo.com/v1/search",
+                params={"name": location, "count": 1, "language": "en", "format": "json"},
+            )
+            geo_resp.raise_for_status()
+            results = geo_resp.json().get("results", [])
+            if not results:
+                raise ValueError(f"Location '{location}' not found via Open-Meteo geocoding")
+
+            lat = results[0]["latitude"]
+            lon = results[0]["longitude"]
+
+            # Step 2: current conditions (hourly, first value = now)
+            wx_resp = await client.get(
+                "https://api.open-meteo.com/v1/forecast",
+                params={
+                    "latitude": lat, "longitude": lon,
+                    "hourly": ["temperature_2m", "relative_humidity_2m", "precipitation"],
+                    "forecast_days": 1, "timezone": "auto",
+                },
+            )
+            wx_resp.raise_for_status()
+            hourly = wx_resp.json().get("hourly", {})
+
+            temp     = float(hourly.get("temperature_2m",       [25.0])[0] or 25.0)
+            humidity = float(hourly.get("relative_humidity_2m", [60.0])[0] or 60.0)
+            rainfall = float(hourly.get("precipitation",        [0.0])[0]  or 0.0)
+
+            # Describe condition from rain
+            if rainfall > 5:
+                condition = "Heavy rain"
+            elif rainfall > 0.5:
+                condition = "Light rain"
+            elif humidity > 80:
+                condition = "Cloudy"
+            else:
+                condition = "Clear sky"
+
+        return {"temperature": temp, "humidity": humidity,
+                "rainfall": rainfall, "condition": condition}
+
+    except Exception as open_meteo_err:
+        logger.warning("Open-Meteo weather fetch failed: %s", open_meteo_err)
+
+    # ── Try OpenWeatherMap if key is available ─────────────────────────────────
     api_key = os.getenv("OPENWEATHER_API_KEY")
-    if not api_key:
-        raise HTTPException(status_code=500, detail="OPENWEATHER_API_KEY not configured")
+    if api_key:
+        try:
+            async with httpx.AsyncClient(timeout=10) as client:
+                geo_resp = await client.get(
+                    "http://api.openweathermap.org/geo/1.0/direct",
+                    params={"q": location, "limit": 1, "appid": api_key},
+                )
+                geo_resp.raise_for_status()
+                geo_data = geo_resp.json()
+                if geo_data:
+                    lat, lon = geo_data[0]["lat"], geo_data[0]["lon"]
+                    w = (await client.get(
+                        "https://api.openweathermap.org/data/2.5/weather",
+                        params={"lat": lat, "lon": lon, "appid": api_key, "units": "metric"},
+                    )).json()
+                    return {
+                        "temperature":      float(w["main"]["temp"]),
+                        "humidity":         float(w["main"]["humidity"]),
+                        "rainfall":         float(w.get("rain",{}).get("1h", 0) or 0),
+                        "condition":        w.get("weather",[{}])[0].get("description","").title(),
+                    }
+        except Exception as owm_err:
+            logger.warning("OpenWeatherMap fallback also failed: %s", owm_err)
+
+    # ── Last-resort regional defaults — never return a 500 ────────────────────
+    logger.warning("All weather sources failed for '%s' — using regional defaults", location)
+    return {"temperature": 28.0, "humidity": 65.0, "rainfall": 0.0, "condition": "Partly cloudy"}
 
     async with httpx.AsyncClient(timeout=10) as client:
         geo_resp = await client.get(

@@ -1,5 +1,5 @@
 """
-plAntzeI - FastAPI Backend
+NextGen Agri - FastAPI Backend
 main.py: App entry point, middleware, model loader, router registration
 """
 
@@ -72,16 +72,16 @@ async def lifespan(app: FastAPI):
 
     yield  # server is running
 
-    logger.info("Shutting down AgroSense backend …")
+    logger.info("Shutting down NextGen Agri backend …")
 
 
 # ─────────────────────────────────────────────
 # FastAPI app
 # ─────────────────────────────────────────────
 app = FastAPI(
-    title="AgroSense API",
-    description="AI-powered precision agriculture — Irrigation, Crop Health, and Crop Recommendation",
-    version="1.0.0",
+    title="NextGen Agri API",
+    description="AI-powered precision agriculture — Irrigation, Crop Health, Crop Recommendation, Market Pricing, Government Schemes, Real Forecast & Soil Data",
+    version="3.0.0",
     lifespan=lifespan,
 )
 
@@ -133,12 +133,22 @@ async def global_exception_handler(request: Request, exc: Exception):
 from routes.irrigation import router as irrigation_router        # noqa: E402
 from routes.crop_health import router as health_router           # noqa: E402
 from routes.crop_recommend import router as recommend_router     # noqa: E402
+from routes.pricing import router as pricing_router              # noqa: E402
+from routes.schemes import router as schemes_router              # noqa: E402
+from routes.forecast import router as forecast_router            # noqa: E402
+from routes.soil import router as soil_router                    # noqa: E402
+from routes.community import router as community_router          # noqa: E402
 from utils.weather import router as weather_router               # noqa: E402
 from utils.calamity import router as calamity_router             # noqa: E402
 
 app.include_router(irrigation_router, prefix="/api/irrigation", tags=["Irrigation"])
 app.include_router(health_router,     prefix="/api/health",     tags=["Crop Health"])
 app.include_router(recommend_router,  prefix="/api/recommend",  tags=["Crop Recommendation"])
+app.include_router(pricing_router,    prefix="/api/pricing",    tags=["Market Pricing"])
+app.include_router(schemes_router,    prefix="/api/schemes",    tags=["Government Schemes"])
+app.include_router(forecast_router,   prefix="/api",            tags=["Forecast & Geocoding"])
+app.include_router(soil_router,       prefix="/api",            tags=["Soil Data"])
+app.include_router(community_router,  prefix="/api/community",  tags=["Community"])
 app.include_router(weather_router,    prefix="/api",            tags=["Weather"])
 app.include_router(calamity_router,   prefix="/api",            tags=["Calamity"])
 

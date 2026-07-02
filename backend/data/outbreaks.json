@@ -1,0 +1,112 @@
+[
+  {
+    "region": "Punjab, India",
+    "status": "Fungi/Blight",
+    "date": "2026-06-30T10:24:29.654367+00:00"
+  },
+  {
+    "region": "Punjab, India",
+    "status": "Rust",
+    "date": "2026-06-29T10:24:29.654367+00:00"
+  },
+  {
+    "region": "Punjab, India",
+    "status": "Fungi/Blight",
+    "date": "2026-06-28T10:24:29.654367+00:00"
+  },
+  {
+    "region": "Tamil Nadu, India",
+    "status": "Insect Damage",
+    "date": "2026-07-01T10:24:29.654367+00:00"
+  },
+  {
+    "region": "Tamil Nadu, India",
+    "status": "Mosaic Virus",
+    "date": "2026-06-27T10:24:29.654367+00:00"
+  },
+  {
+    "region": "Nairobi, Kenya",
+    "status": "Fungi/Blight",
+    "date": "2026-06-29T10:24:29.654367+00:00"
+  },
+  {
+    "region": "Nairobi, Kenya",
+    "status": "Fungi/Blight",
+    "date": "2026-06-26T10:24:29.654367+00:00"
+  },
+  {
+    "region": "Mekong Delta, Vietnam",
+    "status": "Bacterial Spot",
+    "date": "2026-06-30T10:24:29.654367+00:00"
+  },
+  {
+    "region": "Mekong Delta, Vietnam",
+    "status": "Bacterial Spot",
+    "date": "2026-06-25T10:24:29.654367+00:00"
+  },
+  {
+    "region": "Mekong Delta, Vietnam",
+    "status": "Insect Damage",
+    "date": "2026-06-28T10:24:29.654367+00:00"
+  },
+  {
+    "region": "Oromia, Ethiopia",
+    "status": "Rust",
+    "date": "2026-06-24T10:24:29.654367+00:00"
+  },
+  {
+    "region": "Oromia, Ethiopia",
+    "status": "Rust",
+    "date": "2026-06-20T10:24:29.654367+00:00"
+  },
+  {
+    "region": "Sao Paulo, Brazil",
+    "status": "Mosaic Virus",
+    "date": "2026-06-27T10:24:29.654367+00:00"
+  },
+  {
+    "region": "West Bengal, India",
+    "status": "Bacterial Spot",
+    "date": "2026-06-23T10:24:29.654367+00:00"
+  },
+  {
+    "region": "Andhra Pradesh, India",
+    "status": "Insect Damage",
+    "date": "2026-06-26T10:24:29.654367+00:00"
+  },
+  {
+    "region": "Andhra Pradesh, India",
+    "status": "Insect Damage",
+    "date": "2026-06-21T10:24:29.654367+00:00"
+  },
+  {
+    "region": "Karnataka, India",
+    "status": "Fungi/Blight",
+    "date": "2026-06-19T10:24:29.654367+00:00"
+  },
+  {
+    "region": "Rift Valley, Kenya",
+    "status": "Rust",
+    "date": "2026-06-22T10:24:29.654367+00:00"
+  },
+  {
+    "region": "Central Luzon, Philippines",
+    "status": "Fungi/Blight",
+    "date": "2026-06-25T10:24:29.654367+00:00"
+  },
+  {
+    "region": "Tigray, Ethiopia",
+    "status": "Insect Damage",
+    "date": "2026-06-17T10:24:29.654367+00:00"
+  },
+  {
+    "region": "Field A",
+    "status": "Mosaic Virus",
+    "date": "2026-07-02T13:14:32.044330+00:00"
+  },
+  {
+    "region": "Field A",
+    "status": "Mosaic Virus",
+    "date": "2026-07-02T13:19:45.649887+00:00"
+  }
+]
