@@ -1,388 +1,253 @@
-# 🌱 plAntzeI - Smart Farming. Smarter Decisions.
+# 🌱 NextGen Agri — AI Precision Agriculture Platform
 
-An AI-powered precision agriculture platform that helps farmers make data-driven decisions across three core areas: **smart irrigation**, **crop disease detection via drone**, and **intelligent crop recommendation**.
+> **AI-powered crop health, irrigation, market prices, and government scheme access for 500M+ smallholder farmers globally.**
 
----
-
-## 📌 Table of Contents
-
-- [Overview](#overview)
-- [Three Pillars](#three-pillars)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Prerequisites](#prerequisites)
-- [Setup & Installation](#setup--installation)
-- [API Keys Required](#api-keys-required)
-- [Running the Project](#running-the-project)
-- [Testing the API](#testing-the-api)
-- [ML Models Used](#ml-models-used)
-- [External APIs Used](#external-apis-used)
-- [Dataset References](#dataset-references)
-- [Contributing](#contributing)
+![NextGen Agri](https://img.shields.io/badge/NextGen%20Agri-v3.0.0-2d6a4f?style=for-the-badge)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.110-009688?style=for-the-badge&logo=fastapi)
+![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
 ---
 
-## Overview
+## 🎯 Problem
 
-AgroSense is a full-stack agritech prototype built for a startup proposal. It combines IoT sensor data, real-time weather APIs, news intelligence, and trained ML models to provide actionable recommendations to farmers - all through a clean, minimal web interface.
+- **719 million people** live on less than $1.90/day — 80% are rural farmers
+- Farmers lose **30–40% of yield** to undetected crop disease every year
+- **40–60% of irrigation water** is wasted through flood methods
+- Middlemen extract **70–75%** of commodity price from farmers
+- **$100B+** in government agricultural subsidies go unclaimed annually
 
----
+## 💡 Solution
 
-## Three Pillars
-
-### Pillar 1 - Smart Drip Irrigation
-Predicts the exact water flow rate and duration for drip irrigation based on:
-- Real-time soil moisture and temperature (from IoT sensors)
-- Current weather conditions
-- Crop type
-
-**Model:** Random Forest Regressor
+NextGen Agri is a full-stack AI platform with **5 precision agriculture pillars** — deployable across any region, climate, and crop globally. Works entirely with **free, keyless APIs**.
 
 ---
 
-### Pillar 2 - Drone-Based Crop Disease Detection
-A drone captures aerial images of crops and the AI model:
-- Detects disease type (fungi, bacterial, insect damage, rust, mosaic virus)
-- Determines severity (Low / Medium / High)
-- Recommends pesticide type, dosage, and coverage percentage per region
-
-**Model:** MobileNetV2 (Transfer Learning, trained on PlantVillage dataset)
-
----
-
-### Pillar 3 - Crop Type Recommender
-Farmer enters only their **district and state**. The system automatically:
-- Fetches current weather via OpenWeatherMap API
-- Detects current season from the calendar month
-- Scans recent calamity news via NewsData.io API
-- Looks up regional soil profile (N, P, K, pH)
-- Recommends the top 3 crops to cultivate
-
-**Model:** Random Forest Classifier
-
----
-
-## Website Screenshots
- 
-### Hero Section
-![Hero Section](screenshots/1.png)
- 
-### Pillar 1 - Smart Drip Irrigation
-![Irrigation Section](screenshots/2.png)
- 
-### Pillar 2 - Drone Crop Disease Detection
-![Crop Health Section](screenshots/3.png)
- 
-### Pillar 3 - Crop Type Recommender
-![Crop Recommender Section](screenshots/4.png)
-
----
- 
-## Sample Input Images
- 
-> These are example crop leaf images you can use to test **Pillar 2 — Disease Detection** via the `/api/health/analyze` endpoint.
- 
-### Healthy Leaf
-![Healthy Crop](assets/00120a18-ff90-46e4-92fb-2b7a10345bd3___RS_GLSp%209357.jpg)
- 
-### Fungi / Blight Affected
-![Fungi Affected Crop](assets/0034a551-9512-44e5-ba6c-827f85ecc688___RS_Erly.B%209432.jpg)
-
-### Bacterial Spot
-![Bacterial Spot](assets/0051e5e8-d1c4-4a84-bf3a-a426cdad6285___RS_LB%204640.jpg)
-
- 
-
-## Tech Stack
-
-| Layer | Technology |
-|---|---|
-| Frontend | HTML, CSS, Vanilla JavaScript |
-| Backend | Python, FastAPI, Uvicorn |
-| ML Models | Scikit-learn, TensorFlow/Keras |
-| Real-time APIs | OpenWeatherMap, NewsData.io |
-| Data Processing | NumPy, Pandas |
-| Model Persistence | Joblib |
-| Environment Config | python-dotenv |
-
----
-
-## Project Structure
+## 🏗️ Architecture
 
 ```
-Agrotech startup/
+nextgen-agri/
+├── backend/                  # FastAPI Python backend
+│   ├── main.py               # App entry point, CORS, model loader
+│   ├── routes/
+│   │   ├── irrigation.py     # P1 — AI irrigation scheduling
+│   │   ├── crop_health.py    # P2 — CNN disease detection
+│   │   ├── crop_recommend.py # P3 — Crop recommendation engine
+│   │   ├── pricing.py        # P4 — Market price intelligence
+│   │   ├── schemes.py        # P5 — Government scheme eligibility
+│   │   ├── forecast.py       # Open-Meteo 7-day weather forecast
+│   │   ├── soil.py           # SoilGrids ISRIC real soil data
+│   │   └── community.py      # Anonymous activity logging
+│   ├── schemas/              # Pydantic request/response models
+│   ├── utils/                # Image preprocessing, weather helpers
+│   └── data/                 # Persisted JSON: outbreaks, activity
 ├── frontend/
-│   └── index.html                  # Main frontend (all-in-one HTML)
-│
-└── agrosense-backend/
-    ├── main.py                     # FastAPI app entry point
-    ├── requirements.txt            # Python dependencies
-    ├── .env                        # API keys (NOT committed to git)
-    ├── .env.example                # Template for environment variables
-    │
-    ├── routes/
-    │   ├── irrigation.py           # Pillar 1 API endpoint
-    │   ├── crop_health.py          # Pillar 2 API endpoint
-    │   └── crop_recommend.py       # Pillar 3 API endpoint
-    │
-    ├── models/
-    │   ├── irrigation_model.pkl    # Trained irrigation model
-    │   ├── recommend_model.pkl     # Trained crop recommendation model
-    │   └── disease_model.h5        # Trained disease detection model (optional)
-    │
-    ├── utils/
-    │   ├── weather.py              # OpenWeatherMap integration
-    │   ├── calamity.py             # NewsData.io integration
-    │   └── image_utils.py          # Image preprocessing helper
-    │
-    └── training/
-        ├── train_irrigation.py     # Irrigation model training script
-        ├── train_disease.py        # Disease model training script
-        └── train_recommend.py      # Crop recommendation training script
+│   ├── index.html            # Single-page app (vanilla HTML/CSS/JS)
+│   └── assets/
+│       └── sample-leaves/    # Sample leaf images for testing
+└── README.md
 ```
 
 ---
 
-## Prerequisites
+## 🌟 5 Core Pillars
 
-Make sure you have the following installed before starting:
+### 💧 Pillar 1 — Smart Irrigation
+- Enter location + soil conditions
+- Fetches **real 7-day weather** from Open-Meteo (free, no key)
+- AI decides **irrigate vs skip** per day based on rain forecast
+- Water savings calculator: litres saved, CO₂ offset, annual impact
+- Shareable impact report via Web Share API / clipboard
 
-- **Python 3.10 or above** - [Download here](https://www.python.org/downloads/)
-- **Git** - [Download here](https://git-scm.com/)
-- A modern browser (Chrome, Edge, Firefox)
+### 🔬 Pillar 2 — Disease Detection
+- Upload any crop leaf photo (JPEG/PNG)
+- CNN model (MobileNetV2) identifies: **Healthy, Fungi/Blight, Bacterial Spot, Insect Damage, Rust, Mosaic Virus**
+- Returns exact **pesticide name, dosage (ml/L), coverage area**
+- Every detection anonymously logged to **community outbreak tracker** (persisted to disk)
+- Rule-based fallback when model file is absent
+
+### 🌾 Pillar 3 — Crop Recommendation
+- Enter location → everything else is automatic
+- **Real soil data** (pH, N, clay %, sand %, organic carbon) from SoilGrids ISRIC
+- Live weather via Open-Meteo geocoding
+- Season auto-detected (Kharif / Rabi / Zaid)
+- Calamity news scan — avoids flood-prone crops during drought alerts
+- AI ranks top 5 crops with confidence scores and planting advisories
+
+### 📈 Pillar 4 — Market Intelligence
+- 30-day commodity price trend chart
+- **SELL vs HOLD** recommendation with reasoning
+- Direct buyer directory — skip the middlemen
+- Post-harvest storage tips per crop
+
+### 🏛️ Pillar 5 — Government Schemes
+- Checks **12+ real government schemes** across India, Kenya, Ethiopia, Vietnam, Brazil
+- PM-Kisan, PMFBY, PMKSY, PSNP, PSR, PRONAF and more
+- Eligibility engine based on farm size, income, crops, and country
+- Direct application links for each scheme
 
 ---
 
-## Setup & Installation
+## 🆓 Free APIs Used (No Key Required)
 
-### Step 1 - Clone the repository
+| API | Purpose |
+|---|---|
+| [Open-Meteo](https://open-meteo.com) | 7-day weather forecast for any GPS coordinates (ECMWF models) |
+| [SoilGrids ISRIC](https://www.isric.org/explore/soilgrids) | Global soil pH, nitrogen, clay %, sand %, organic carbon |
+| [Open-Meteo Geocoding](https://open-meteo.com/en/docs/geocoding-api) | City name → lat/lon coordinates |
+| [Nominatim (OpenStreetMap)](https://nominatim.org) | GPS coordinates → city/country name |
+| Browser Geolocation API | Device GPS |
+| Web Speech API | Voice-to-text location input |
 
+### Optional (free signup)
+| API | Purpose |
+|---|---|
+| OpenWeatherMap | Backup weather source |
+| NewsAPI | Calamity news scan for crop recommender |
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Python 3.10+
+- Modern browser (Chrome/Edge recommended for voice input)
+
+### 1. Clone the repo
 ```bash
-git clone https://github.com/Si-ra-kri/plantzei.git
-cd plantzei
+git clone https://github.com/Si-ra-kri/nextgen-agri.git
+cd nextgen-agri
 ```
 
-### Step 2 - Create and activate a virtual environment
-
-**Windows (PowerShell):**
-```powershell
+### 2. Install backend dependencies
+```bash
 cd backend
-python -m venv venv
-
-# If execution policy blocks activation, run this once:
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-
-.\venv\Scripts\activate
-```
-
-**Mac / Linux:**
-```bash
-cd backend
-python3 -m venv venv
-source venv/bin/activate
-```
-
-Your terminal prompt should now show `(venv)` at the start.
-
-### Step 3 - Install all dependencies
-
-```bash
 pip install -r requirements.txt
 ```
 
+### 3. (Optional) Set API keys in `.env`
+```env
+OPENWEATHER_API_KEY=your_key_here   # optional backup weather
+NEWS_API_KEY=your_key_here          # optional calamity news
+```
+
+### 4. Start the backend
+```bash
+python -m uvicorn main:app --host 127.0.0.1 --port 8000 --reload
+```
+
+### 5. Start the frontend
+```bash
+cd ..
+python -m http.server 5500 --directory frontend
+```
+
+### 6. Open the app
+```
+http://localhost:5500
+```
+
+**API Docs (Swagger UI):** `http://127.0.0.1:8000/docs`
+
 ---
 
-## API Keys Required
+## 🤖 AI Chatbot
 
-This project uses two free external APIs. Register and get your keys before running.
+A floating **💬 Ask AI** button is available on every page. The assistant knows about all 5 pillars and can answer questions like:
 
-| API | Purpose | Register At |
+- *"How does disease detection work?"*
+- *"What crops should I plant in Kharif season?"*
+- *"How is weather data fetched without an API key?"*
+- *"What government schemes am I eligible for?"*
+
+---
+
+## 🎨 UI Features
+
+- **Dark / Light theme** toggle (saved to localStorage)
+- **📍 Detect** button — auto-fill location via GPS
+- **🎤 Speak** button — voice input for location fields
+- Auto-scroll to result after every analysis
+- Community disease outbreak map (real-time, persisted to disk)
+- Responsive layout for mobile and desktop
+
+---
+
+## 🗺️ Community Disease Tracker
+
+Every disease detection (non-healthy) is:
+1. Anonymously appended to `backend/data/outbreaks.json`
+2. Aggregated by disease type with region and trend
+3. Displayed in the **Community Disease Alerts** panel
+
+Data persists across server restarts. Seed data covers 20 real-world regions across India, Kenya, Vietnam, Ethiopia, Brazil, and the Philippines.
+
+---
+
+## 📊 Projected Impact (Year 1 — 100,000 Farmers)
+
+| Metric | Value |
+|---|---|
+| Income gain | **$50M+** via optimisation & fair pricing |
+| Meals secured | **100M+** through 30–40% yield recovery |
+| Water conserved | **5 billion m³** vs flood irrigation |
+| CO₂ saved | **2M+ tonnes** equivalent |
+| Govt. benefits unlocked | **$55K** average per farmer |
+
+---
+
+## 🧪 Testing Disease Detection
+
+Sample leaf images are included in `frontend/assets/sample-leaves/`:
+
+| File | Expected Result |
+|---|---|
+| `leaf_healthy_rice.png` | Healthy ✅ |
+| `leaf_blight_tomato.png` | Fungi/Blight 🔴 |
+| `leaf_rust_wheat.png` | Rust ⚠️ |
+| `leaf_insect_damage.png` | Insect Damage ⚠️ |
+| `leaf_mosaic_virus.png` | Mosaic Virus ⚠️ |
+
+---
+
+## 📁 Key Endpoints
+
+| Method | Endpoint | Description |
 |---|---|---|
-| OpenWeatherMap | Live weather + geocoding | [openweathermap.org/api](https://openweathermap.org/api) |
-| NewsData.io | Recent calamity news by location | [newsdata.io](https://newsdata.io) |
-
-### Step 4 - Create your `.env` file
-
-Inside the `backend/` folder, create a file named `.env` (copy from the example):
-
-**Windows:**
-```powershell
-copy .env.example .env
-```
-
-**Mac / Linux:**
-```bash
-cp .env.example .env
-```
-
-Open `.env` and fill in your actual keys:
-
-```
-OPENWEATHER_API_KEY=your_openweathermap_key_here
-NEWS_API_KEY=your_newsdata_io_key_here
-MODEL_DIR=./models
-```
-
-> ⚠️ **Never commit your `.env` file to GitHub.** It is already listed in `.gitignore`.
-
-> ⚠️ **OpenWeatherMap note:** Newly created API keys take up to 15 minutes to activate. If you get a `401 Unauthorized` error, wait a few minutes and try again.
+| POST | `/api/irrigation/predict` | AI irrigation schedule |
+| POST | `/api/health/analyze` | Single leaf disease detection |
+| GET | `/api/health/outbreaks` | Community outbreak data |
+| POST | `/api/recommend/crop` | AI crop recommendation |
+| GET | `/api/pricing/commodity` | Market price intelligence |
+| GET | `/api/pricing/buyers` | Direct buyer directory |
+| POST | `/api/schemes/find` | Government scheme eligibility |
+| GET | `/api/forecast` | 7-day weather forecast |
+| GET | `/api/soil` | Real soil data from SoilGrids |
+| POST | `/api/community/log` | Anonymous activity logging |
+| GET | `/api/community/stats` | Community usage statistics |
 
 ---
 
-## Running the Project
+## 🛠️ Tech Stack
 
-You need **two things running simultaneously** - the backend server and the frontend file.
-
-### Step 5 - Start the Backend
-
-Open a terminal inside `backend/` with the virtual environment activated:
-
-```bash
-uvicorn main:app --reload --port 8000
-```
-
-You should see:
-```
-INFO:     Uvicorn running on http://127.0.0.1:8000
-INFO:     Application startup complete.
-✅ irrigation_model.pkl loaded
-✅ recommend_model.pkl loaded
-```
-
-Leave this terminal running.
-
-### Step 6 - Open the Frontend
-
-Open a **second terminal** and run:
-
-**Windows:**
-```powershell
-cd "plantzei\frontend"
-start index.html
-```
-
-**Mac:**
-```bash
-open frontend/index.html
-```
-
-**Linux:**
-```bash
-xdg-open frontend/index.html
-```
-
-This opens the plAntzeI website directly in your browser.
+| Layer | Technology |
+|---|---|
+| Backend | Python 3.10, FastAPI, Uvicorn |
+| ML Inference | TensorFlow/Keras (MobileNetV2), scikit-learn |
+| HTTP Client | httpx (async) |
+| Frontend | Vanilla HTML5, CSS3, JavaScript (ES2022) |
+| Charts | Chart.js v4 |
+| Fonts | Inter (Google Fonts) |
+| Data | JSON file persistence (→ vector DB in production) |
 
 ---
 
-## Testing the API
+## 📄 License
 
-FastAPI automatically generates an interactive API testing interface.
-
-Once the backend is running, open this in your browser:
-
-```
-http://localhost:8000/docs
-```
-
-### Test Pillar 1 - Irrigation Prediction
-
-Find `POST /api/irrigation/predict` → Click **Try it out** → Enter:
-
-```json
-{
-  "soil_moisture": 42,
-  "soil_temperature": 28,
-  "crop_type": "Rice",
-  "weather": "Sunny"
-}
-```
-
-### Test Pillar 2 - Disease Detection
-
-Find `POST /api/health/analyze` → Upload a crop leaf image.
-
-### Test Pillar 3 - Crop Recommendation
-
-Find `POST /api/recommend/crop` → Click **Try it out** → Enter:
-
-```json
-{
-  "location": "Thanjavur, Tamil Nadu"
-}
-```
-
-Expected response includes auto-detected season, weather summary, recent calamity (if any), and top 3 recommended crops.
-
-### Health Check
-
-```
-http://localhost:8000/health
-```
-
-Should return: `{"status": "ok", "version": "1.0.0"}`
+MIT License — free to use, modify, and deploy.
 
 ---
 
-## ML Models Used
-
-| Pillar | Model | Task Type | Dataset |
-|---|---|---|---|
-| Irrigation | Random Forest Regressor | Regression | Kaggle Watering Plants Dataset |
-| Disease Detection | MobileNetV2 (Transfer Learning) | Image Classification | PlantVillage Dataset |
-| Crop Recommendation | Random Forest Classifier | Multi-class Classification | Kaggle Crop Recommendation Dataset |
-
-> **Note:** Pre-trained `.pkl` model files are not included in the repository due to file size. Run the training scripts in `training/` to generate them, or contact the maintainer for the model files.
-
----
-
-## External APIs Used
-
-### Real-time Data APIs
-
-**OpenWeatherMap**
-- Geocoding API - converts district/state name to coordinates
-- Current Weather API - fetches live temperature, humidity, rainfall
-
-**NewsData.io**
-- Searches recent news headlines for the given district
-- Detects keywords: flood, drought, cyclone, hailstorm, landslide, earthquake
-- Used to determine if any recent calamity has affected the region
-
-Together these are referred to as **Real-time Data APIs** in the system architecture.
-
----
-
-## Dataset References
-
-| Dataset | Used In | Link |
-|---|---|---|
-| Crop Recommendation Dataset | Pillar 3 | [Kaggle](https://www.kaggle.com/datasets/atharvaingle/crop-recommendation-dataset) |
-| PlantVillage Disease Dataset | Pillar 2 | [Kaggle](https://www.kaggle.com/datasets/abdallahalidev/plantvillage-dataset) |
-| Watering Plants Dataset | Pillar 1 | [Kaggle](https://www.kaggle.com/datasets/nelakurthisudheer/dataset-for-predicting-watering-the-plants) |
-
----
-
-## Common Errors & Fixes
-
-| Error | Cause | Fix |
-|---|---|---|
-| `401 Unauthorized` from OpenWeatherMap | Key not yet active or wrong key | Wait 15 mins after registration; verify key in `.env` |
-| `Could not fetch data for this location` | Backend not running or `.env` missing | Start uvicorn and verify `.env` exists |
-| `Import could not be resolved` in Cursor | Wrong Python interpreter selected | Ctrl+Shift+P → Python: Select Interpreter → pick venv |
-| `running scripts is disabled` in PowerShell | Execution policy blocked | Run `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser` |
-| `502 Bad Gateway` | API key placeholder still in `.env` | Open `.env` and replace placeholder text with real key |
-
----
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/your-feature`
-3. Commit your changes: `git commit -m "Add your feature"`
-4. Push to the branch: `git push origin feature/your-feature`
-5. Open a Pull Request
-
----
-
-*Built as a startup prototype for AI-powered precision agriculture.*
+<div align="center">
+  <strong>NextGen Agri</strong> — Built to empower 500 million smallholder farmers worldwide 🌍
+</div>
